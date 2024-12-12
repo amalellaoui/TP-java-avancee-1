@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<classpath>
-	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
-	<classpathentry kind="src" path="tp7-java-main/src"/>
-	<classpathentry kind="lib" path="tp7-java-main/lib/junit-platform-console-standalone-1.9.3.jar"/>
-	<classpathentry kind="lib" path="tp7-java-main/lib/mysql-connector-j-9.1.0.jar"/>
-	<classpathentry kind="output" path="tp7-java-main/bin"/>
-</classpath>
