@@ -1,0 +1,741 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{geometry}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{titlesec} % Pour styliser les titres
+
+\geometry{top=2cm, bottom=2cm, left=2cm, right=2cm}
+
+% Définir des couleurs
+\definecolor{myblue}{rgb}{0.0, 0.0, 1.0} % Bleu pour les titres
+\definecolor{myred}{rgb}{1.0, 0.0, 0.0} % Rouge pour le texte
+\definecolor{mygray}{rgb}{0.7, 0.7, 0.7} % Gris pour les lignes
+
+% Personnaliser les titres de sections
+\titleformat{\section}[block]{\normalfont\Large\bfseries\color{myblue}}{}{0em}{}[]
+\titleformat{\subsection}[block]{\normalfont\large\bfseries\color{myblue}}{}{0em}{}[]
+
+% Configurer les listings pour les couleurs
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue}\bfseries,
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    numbers=left,
+    numberstyle=\tiny\color{mygray},
+    stepnumber=1,
+    breaklines=true,
+    frame=single,
+    backgroundcolor=\color{white} % Arrière-plan blanc
+}
+
+\begin{document}
+
+% Page de garde
+\begin{titlepage}
+    % Logo en haut à gauche
+    \begin{flushleft}
+        \includegraphics[width=4cm]{ESTS.jpg} % Chemin correct du logo
+    \end{flushleft}
+    % Informations institutionnelles
+    \begin{center}
+        {\large \textbf{\color{myblue}Université Cadi Ayyad}} \\[0.2cm]
+        {\large \textbf{\color{myblue}École Supérieure De Technologie - Safi}} \\[0.2cm]
+        {\large \textbf{\color{myblue}Département : Informatique}} \\[0.2cm]
+        {\large \textbf{\color{myblue}Filière : Génie Informatique (GI)}} \\[0.8cm]
+        \rule{\linewidth}{0.5mm} \\[0.4cm] % Ligne supérieure
+        % Titre principal
+        {\Huge \textbf{\color{myred}Compte Rendu TP2}} \\[0.5cm]
+        {\Large \textbf{\color{myred}Gestion des Congés en Java (DAO/MVC)}} \\[1.5cm]
+        
+        \rule{\linewidth}{0.5mm} \\[2cm] % Ligne inférieure
+    \end{center}
+
+
+ % Informations en bas de la page
+    \vfill % Pousse le texte suivant en bas de la page
+    \begin{flushleft}
+        \textbf{Réalisée par :} AMAL ELLAOUI \\[0.3cm]
+        \textbf{Encadrée par :} Mme ILHAM KACHBAL
+    \end{flushleft}
+    \end{titlepage}
+% Table des matières sans date
+\tableofcontents
+\newpage
+\section{Introduction}
+
+Dans le cadre de ce projet, nous avons développé une application Java destinée à la gestion des congés. Cette application repose sur l'architecture DAO (Data Access Object) et le modèle MVC (Model-View-Controller), assurant une séparation claire des responsabilités. L'objectif principal était d'offrir une solution modulaire, maintenable et extensible pour la gestion des congés au sein d'une organisation.
+
+\section{Architecture et Étapes Suivies}
+
+\subsection{Architecture du Projet}
+
+Le projet suit l'architecture MVC, divisant la logique du programme en trois couches distinctes : \begin{enumerate} \item \textbf{Modèle (Model)} : Cette couche contient la logique métier ainsi que les classes représentant les entités, notamment \texttt{Holiday} (pour les congés) et \texttt{Type} (pour les types de congés). \item \textbf{Vue (View)} : Elle gère l'interface utilisateur et l'affichage des données, notamment à l'aide de composants Swing tels que \texttt{JTable} et \texttt{JComboBox}. \item \textbf{Contrôleur (Controller)} : Cette couche relie le modèle à la vue et coordonne les interactions utilisateur. Par exemple, la classe \texttt{HolidayController} gère les événements liés aux boutons (ajouter, modifier, supprimer) et assure la synchronisation des données entre la vue et le modèle. \end{enumerate}
+
+\subsection{Étapes Suivies}
+
+Pour mener à bien le développement de l'application, nous avons suivi les étapes suivantes : \begin{enumerate} \item \textbf{Conception de la base de données} : \begin{itemize} \item Création d'une table \texttt{Holiday} avec des colonnes pour les informations relatives aux congés (ID, nom de l'employé, date de début, date de fin, type). \end{itemize} \item \textbf{Développement du module DAO} : \begin{itemize} \item Création d'une interface générique \texttt{GenericDAO} définissant les opérations CRUD de base. \item Implémentation de cette interface dans \texttt{HolidayDAOImpl}, en utilisant des requêtes SQL préparées pour interagir avec la base de données. \end{itemize} \item \textbf{Développement des classes du modèle} : \begin{itemize} \item Création de la classe \texttt{Holiday}, qui représente un congé, avec des attributs comme \texttt{id}, \texttt{employeeName}, \texttt{startDate}, \texttt{endDate} et \texttt{type}. \item Définition de l'énumération \texttt{Type} pour encapsuler les différents types de congés (par exemple, \texttt{ANNUEL}, \texttt{MALADIE}). \end{itemize} \item \textbf{Développement de la vue} : \begin{itemize} \item Conception d'une interface utilisateur intuitive utilisant Swing pour permettre la gestion des congés via des formulaires et des tableaux interactifs. \end{itemize} \item \textbf{Développement du contrôleur} : \begin{itemize} \item Mise en œuvre de la logique permettant de gérer les actions utilisateur (ajout, suppression, modification) et de synchroniser les données entre la base et l'affichage. \end{itemize} \end{enumerate}
+
+\section{Explications des Codes}
+
+\subsection{Modèle (\texttt{Holiday}, \texttt{Type})}
+
+\begin{itemize} \item \textbf{Objectif} : Le modèle représente les données manipulées par l'application. \item \textbf{Détails} : \begin{itemize} \item \texttt{Holiday} : Classe encapsulant les informations d'un congé, avec des attributs comme \texttt{id}, \texttt{employeeName}, \texttt{startDate}, \texttt{endDate}, et \texttt{type}. Elle contient également des \texttt{getters} et \texttt{setters} pour accéder aux propriétés. \item \texttt{Type} : Énumération définissant les types de congés possibles, tels que \texttt{ANNUEL}, \texttt{MALADIE}, etc., permettant d'assurer la cohérence des données. \end{itemize} \end{itemize}
+\subsection{Classe \texttt{Holiday}}
+\begin{lstlisting}[language=Java,caption={Classe Holiday}]
+
+package Model;
+
+public class Holiday {
+    private int id; // Identifiant du congé
+    private int employeeId; // ID de l'employé
+    private String employeeName; // Nom complet de l'employé
+    private String startDate; // Date de début
+    private String endDate;   // Date de fin
+    private Type type;        // Type de congé (enum)
+
+    // Constructeur avec employeeName pour listAll()
+    public Holiday(int id, String employeeName, String startDate, String endDate, Type type) {
+        this.id = id;
+        this.employeeName = employeeName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.type = type;
+    }
+    public Holiday(String employeeName, String startDate, String endDate, Type type) {
+        this.employeeName = employeeName;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.type = type;
+    }
+
+    // Constructeur pour add() et update() (sans employeeName)
+    public Holiday(int employeeId, String startDate, String endDate, Type type) {
+        this.employeeId = employeeId;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.type = type;
+    }
+
+    // Getters et Setters
+    public int getId() {
+        return id;
+    }
+
+    public int getEmployeeId() {
+        return employeeId;
+    }
+
+    public String getEmployeeName() {
+        return employeeName; // Retourne le nom complet
+    }
+
+    public String getStartDate() {
+        return startDate;
+    }
+
+    public String getEndDate() {
+        return endDate;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+}
+\end{lstlisting}
+\subsection{Modèle (\texttt{Holiday}, \texttt{Type})}
+\begin{itemize}
+    \item \textbf{Objectif} : Représenter les données relatives aux congés dans l'application.
+    \item \textbf{Détails} :
+    \begin{itemize}
+        \item \texttt{Holiday} contient des attributs comme \texttt{employeeId}, \texttt{startDate}, \texttt{endDate}, etc., avec des \texttt{getters} et \texttt{setters}.
+        \item \texttt{Type} est une énumération définissant les types de congés (maladie, payé, non payé).
+    \end{itemize}
+\end{itemize}
+
+\subsection{Code Source}
+
+\paragraph{Enumération \texttt{Type}}
+\begin{lstlisting}[language=Java, caption={Enumération Type}, label={lst:type}]
+package Model;
+
+public enum Type {
+    CONGE_MALADIE,
+    CONGE_PAYE,
+    CONGE_NON_PAYE
+}
+\end{lstlisting}
+
+\subsection{Connexion à la base de données (\texttt{DBConnection})}
+\begin{itemize}
+    \item \textbf{Objectif} : Gérer la connexion à la base de données MySQL pour les données relatives aux congés.
+    \item \textbf{Détails} :
+    \begin{itemize}
+        \item Utilise le driver JDBC pour se connecter à la base de données \texttt{conge}.
+        \item Gère les exceptions SQL en affichant des messages d'erreur pertinents.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Code Source}
+\paragraph{Classe \texttt{DBConnection}}
+\begin{lstlisting}[language=Java, caption={Connexion à la base de données}, label={lst:dbconnection}]
+package DAO;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+
+public class DBConnection {
+    private static final String URL = "jdbc:mysql://localhost:3306/conge";
+    private static final String USER = "root";
+    private static final String PASSWORD = "";
+
+    public static Connection getConnection() throws SQLException {
+        return DriverManager.getConnection(URL, USER, PASSWORD);
+    }
+}
+\end{lstlisting}
+\subsection{DAO (\texttt{HolidayDAOImpl})}
+\begin{itemize}
+    \item \textbf{Objectif} : Effectuer les opérations CRUD sur les congés des employés.
+    \item \textbf{Fonctionnalités principales} :
+    \begin{itemize}
+        \item \texttt{add()} : Ajoute un congé pour un employé dans la base de données.
+        \item \texttt{delete()} : Supprime un congé en fonction de son ID.
+        \item \texttt{listAll()} : Récupère tous les congés sous forme de liste.
+        \item \texttt{findById()} : Récupère un congé en fonction de son ID.
+        \item \texttt{update()} : Met à jour un congé existant.
+    \end{itemize}
+\end{itemize}
+
+\subsection{Code Source}
+\paragraph{Classe \texttt{HolidayDAOImpl}}
+\begin{lstlisting}[language=Java, caption={DAO HolidayDAOImpl}, label={lst:holidayDAOImpl}]
+package DAO;
+
+import Model.Holiday;
+import Model.Type;
+
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
+
+public class HolidayDAOImpl implements GenericDAO<Holiday> {
+
+    // Constants for SQL queries
+    private static final String INSERT_HOLIDAY_SQL = "INSERT INTO holiday (employeeId, startDate, endDate, type) VALUES (?, ?, ?, ?)";
+    private static final String DELETE_HOLIDAY_SQL = "DELETE FROM holiday WHERE id = ?";
+    private static final String SELECT_ALL_HOLIDAY_SQL = "SELECT h.id, CONCAT(e.nom, ' ', e.prenom) AS employeeName, h.startDate, h.endDate, h.type FROM holiday h JOIN employe e ON h.employeeId = e.id";
+    private static final String SELECT_HOLIDAY_BY_ID_SQL = "SELECT h.id, CONCAT(e.nom, ' ', e.prenom) AS employeeName, h.startDate, h.endDate, h.type FROM holiday h JOIN employe e ON h.employeeId = e.id WHERE h.id = ?";
+    private static final String SELECT_EMPLOYEE_ID_BY_NAME_SQL = "SELECT id FROM employe WHERE CONCAT(nom, ' ', prenom) = ?";
+    
+    // Méthode pour ajouter un congé
+    @Override
+    public void add(Holiday holiday) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(INSERT_HOLIDAY_SQL)) {
+            int employeeId = getEmployeeIdByName(holiday.getEmployeeName());
+            if (employeeId == -1) {
+                System.out.println("Erreur : Employé introuvable.");
+                return;
+            }
+            stmt.setInt(1, employeeId);
+            stmt.setString(2, holiday.getStartDate());
+            stmt.setString(3, holiday.getEndDate());
+            stmt.setString(4, holiday.getType().name());
+            stmt.executeUpdate();
+            System.out.println("Congé ajouté avec succès.");
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de l'ajout du congé : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Méthode pour supprimer un congé par ID
+    @Override
+    public void delete(int id) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(DELETE_HOLIDAY_SQL)) {
+            stmt.setInt(1, id);
+            int rowsDeleted = stmt.executeUpdate();
+            if (rowsDeleted > 0) {
+                System.out.println("Congé supprimé avec succès.");
+            } else {
+                System.out.println("Aucun congé trouvé avec cet ID.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la suppression du congé : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Méthode pour lister tous les congés
+    @Override
+    public List<Holiday> listAll() {
+        List<Holiday> holidays = new ArrayList<>();
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_ALL_HOLIDAY_SQL); ResultSet rs = stmt.executeQuery()) {
+            while (rs.next()) {
+                Holiday holiday = new Holiday(
+                        rs.getInt("id"),
+                        rs.getString("employeeName"),
+                        rs.getString("startDate"),
+                        rs.getString("endDate"),
+                        Type.valueOf(rs.getString("type"))
+                );
+                holidays.add(holiday);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des congés : " + e.getMessage());
+            e.printStackTrace();
+        }
+        return holidays;
+    }
+
+    // Méthode pour trouver un congé par ID
+    @Override
+    public Holiday findById(int id) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_HOLIDAY_BY_ID_SQL)) {
+            stmt.setInt(1, id);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return new Holiday(
+                        rs.getInt("id"),
+                        rs.getString("employeeName"),
+                        rs.getString("startDate"),
+                        rs.getString("endDate"),
+                        Type.valueOf(rs.getString("type"))
+                );
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la recherche du congé : " + e.getMessage());
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    // Méthode pour mettre à jour un congé
+    @Override
+    public void update(Holiday holiday, int id) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement("UPDATE holiday SET employeeId = ?, startDate = ?, endDate = ?, type = ? WHERE id = ?")) {
+            int employeeId = getEmployeeIdByName(holiday.getEmployeeName());
+            if (employeeId == -1) {
+                System.out.println("Erreur : Employé introuvable.");
+                return;
+            }
+            stmt.setInt(1, employeeId);
+            stmt.setString(2, holiday.getStartDate());
+            stmt.setString(3, holiday.getEndDate());
+            stmt.setString(4, holiday.getType().name());
+            stmt.setInt(5, id);
+            int rowsUpdated = stmt.executeUpdate();
+            if (rowsUpdated > 0) {
+                System.out.println("Congé mis à jour avec succès.");
+            } else {
+                System.out.println("Aucun congé trouvé avec cet ID.");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la mise à jour du congé : " + e.getMessage());
+            e.printStackTrace();
+        }
+    }
+
+    // Méthode pour récupérer l'ID de l'employé par nom complet
+    public int getEmployeeIdByName(String employeeName) {
+        try (Connection conn = DBConnection.getConnection(); PreparedStatement stmt = conn.prepareStatement(SELECT_EMPLOYEE_ID_BY_NAME_SQL)) {
+            stmt.setString(1, employeeName);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt("id");
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération de l'ID employé : " + e.getMessage());
+            e.printStackTrace();
+        }
+        return -1;
+    }
+
+    // Méthode pour récupérer tous les noms des employés
+    public List<String> getAllEmployeeNames() {
+        List<String> employeeNames = new ArrayList<>();
+        String query = "SELECT CONCAT(nom, ' ', prenom) AS fullName FROM employe";
+
+        try (Connection conn = DBConnection.getConnection();
+             PreparedStatement stmt = conn.prepareStatement(query);
+             ResultSet rs = stmt.executeQuery()) {
+
+            while (rs.next()) {
+                String fullName = rs.getString("fullName");
+                employeeNames.add(fullName);
+            }
+        } catch (SQLException e) {
+            System.err.println("Erreur lors de la récupération des noms des employés : " + e.getMessage());
+        }
+
+        return employeeNames;
+    }
+
+    // Méthode pour récupérer les types de congés (Enum)
+    public List<Type> getAllHolidayTypes() {
+        List<Type> holidayTypes = new ArrayList<>();
+        for (Type type : Type.values()) {
+            holidayTypes.add(type);
+        }
+        return holidayTypes;
+    }
+}
+\end{lstlisting}
+
+\usepackage{listings}
+\usepackage{xcolor}
+
+\lstset{
+  language=Java,                       % Définit le langage du code
+  basicstyle=\ttfamily\small,          % Police de base pour le code
+  keywordstyle=\color{blue}\bfseries,  % Couleur et style des mots-clés
+  commentstyle=\color{gray}\itshape,   % Couleur et style des commentaires
+  stringstyle=\color{red},             % Couleur des chaînes de caractères
+  numbers=left,                        % Affiche les numéros de ligne à gauche
+  numberstyle=\tiny\color{gray},       % Style des numéros de ligne
+  stepnumber=1,                        % Pas entre les numéros de ligne
+  numbersep=5pt,                       % Espacement entre les numéros de ligne et le code
+
+  frame=single,                        % Cadre autour du code
+  tabsize=4,                           % Largeur d'une tabulation
+  showstringspaces=false,              % Ne montre pas les espaces dans les chaînes
+  breaklines=true,                     % Coupe les longues lignes automatiquement
+  breakatwhitespace=true,              % Coupe les lignes aux espaces
+}
+\subsection{Vue (HolidayView)}
+\textbf{Objectif} : Fournir une interface utilisateur pour gérer les congés des employés.
+
+\textbf{Détails} :
+\begin{itemize}
+    \item Contient des champs de saisie pour les détails des congés (nom de l'employé, dates de début et de fin, type de congé).
+    \item Des boutons permettent d'exécuter les différentes actions CRUD.
+\end{itemize}
+
+Code source :
+\begin{lstlisting}
+package View;
+
+import javax.swing.*;
+import java.awt.*;
+
+public class HolidayView extends JFrame {
+    public JTable holidayTable;
+    public JButton addButton, listButton, deleteButton, modifyButton, switchViewButton;
+    public JComboBox<String> employeeNameComboBox;
+    public JTextField startDateField, endDateField;
+    public JComboBox<String> typeCombo;
+
+    public HolidayView() {
+        setTitle("Gestion des Congés");
+        setSize(800, 600);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLayout(new BorderLayout());
+
+        // Panneau de saisie des champs
+        JPanel inputPanel = new JPanel(new GridLayout(0, 2, 10, 10));
+        inputPanel.add(new JLabel("Employé Nom Complet:"));
+        employeeNameComboBox = new JComboBox<>();
+        inputPanel.add(employeeNameComboBox);
+
+        inputPanel.add(new JLabel("Date Début:"));
+        startDateField = new JTextField();
+        inputPanel.add(startDateField);
+
+        inputPanel.add(new JLabel("Date Fin:"));
+        endDateField = new JTextField();
+        inputPanel.add(endDateField);
+
+        inputPanel.add(new JLabel("Type:"));
+        typeCombo = new JComboBox<>(new String[]{"CONGE_PAYE", "CONGE_MALADIE", "CONGE_NON_PAYE"});
+        inputPanel.add(typeCombo);
+
+        add(inputPanel, BorderLayout.NORTH);
+
+        // Table des congés
+        holidayTable = new JTable();
+        add(new JScrollPane(holidayTable), BorderLayout.CENTER);
+
+        // Boutons d'action
+        JPanel buttonPanel = new JPanel();
+        addButton = new JButton("Ajouter");
+        buttonPanel.add(addButton);
+        listButton = new JButton("Afficher");
+        buttonPanel.add(listButton);
+        deleteButton = new JButton("Supprimer");
+        buttonPanel.add(deleteButton);
+        modifyButton = new JButton("Modifier");
+        buttonPanel.add(modifyButton);
+
+        switchViewButton = new JButton("Gerer les Employés");
+        buttonPanel.add(switchViewButton);
+
+        add(buttonPanel, BorderLayout.SOUTH);
+    }
+}
+\end{lstlisting}
+\subsection{Contrôleur (HolidayController)}
+\textbf{Objectif} : Gérer les interactions utilisateur pour la gestion des congés et coordonner les actions entre la vue et le modèle.
+
+\textbf{Fonctionnalités principales} :
+\begin{itemize}
+    \item \texttt{addHoliday()}: Ajoute un congé en récupérant les entrées utilisateur et en appelant \texttt{HolidayDAOImpl.add}.
+    \item \texttt{deleteHoliday()}: Supprime un congé en fonction de son ID après confirmation.
+    \item \texttt{modifyHoliday()}: Modifie les informations d'un congé existant.
+    \item \texttt{loadEmployeeNames()}: Charge et affiche les noms des employés dans la vue.
+    \item \texttt{refreshHolidayTable()}: Rafraîchit la table des congés affichée dans la vue.
+\end{itemize}
+
+Code source :
+\begin{lstlisting}[language=Java]
+package Controller;
+
+import DAO.HolidayDAOImpl;
+import Model.Holiday;
+import Model.Type;
+import View.HolidayView;
+
+import javax.swing.*;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+public class HolidayController {
+    private final HolidayView view;
+    private final HolidayDAOImpl dao;
+
+    public HolidayController(HolidayView view) {
+        this.view = view;
+        this.dao = new HolidayDAOImpl();
+
+        loadEmployeeNames();
+        refreshHolidayTable();
+
+        view.addButton.addActionListener(e -> addHoliday());
+        view.deleteButton.addActionListener(e -> deleteHoliday());
+        view.modifyButton.addActionListener(e -> modifyHoliday());
+
+        // Ajout d'un écouteur de sélection sur la table
+        view.holidayTable.getSelectionModel().addListSelectionListener(e -> {
+            if (!e.getValueIsAdjusting()) { // Vérifie si la sélection est terminée
+                int selectedRow = view.holidayTable.getSelectedRow();
+                if (selectedRow != -1) {
+                    // Récupérer l'ID et les autres informations de la ligne sélectionnée
+                    int id = (int) view.holidayTable.getValueAt(selectedRow, 0); // Récupère l'ID depuis la colonne 0
+                    String employeeName = (String) view.holidayTable.getValueAt(selectedRow, 1);
+                    String startDate = (String) view.holidayTable.getValueAt(selectedRow, 2);
+                    String endDate = (String) view.holidayTable.getValueAt(selectedRow, 3);
+                    Type type = Type.valueOf(view.holidayTable.getValueAt(selectedRow, 4).toString());
+
+                    // Remplir les champs de modification avec ces valeurs
+                    view.employeeNameComboBox.setSelectedItem(employeeName);
+                    view.startDateField.setText(startDate);
+                    view.endDateField.setText(endDate);
+                    view.typeCombo.setSelectedItem(type.toString());
+
+                    // Modifier l'action du bouton de modification pour utiliser l'ID de la ligne sélectionnée
+                    view.modifyButton.setActionCommand(String.valueOf(id));
+                }
+            }
+        });
+    }
+
+    private void loadEmployeeNames() {
+        view.employeeNameComboBox.removeAllItems();
+        List<String> names = dao.getAllEmployeeNames();
+
+        if (names.isEmpty()) {
+            System.out.println("Aucun employé trouvé.");
+        } else {
+            System.out.println("Noms des employés chargés : " + names);
+            for (String name : names) {
+                view.employeeNameComboBox.addItem(name);
+            }
+        }
+    }
+
+    private void refreshHolidayTable() {
+        List<Holiday> holidays = dao.listAll();
+        String[] columnNames = {"ID", "Employé", "Date Début", "Date Fin", "Type"};
+        Object[][] data = new Object[holidays.size()][5];
+
+        for (int i = 0; i < holidays.size(); i++) {
+            Holiday h = holidays.get(i);
+            data[i] = new Object[]{h.getId(), h.getEmployeeName(), h.getStartDate(), h.getEndDate(), h.getType()};
+        }
+
+        view.holidayTable.setModel(new javax.swing.table.DefaultTableModel(data, columnNames));
+    }
+
+    private boolean isValidDate(String date) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+            LocalDate.parse(date, formatter);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private boolean isEndDateAfterStartDate(String startDate, String endDate) {
+        DateTimeFormatter formatter = DateTimeFormatter.ISO_LOCAL_DATE;
+        LocalDate start = LocalDate.parse(startDate, formatter);
+        LocalDate end = LocalDate.parse(endDate, formatter);
+
+        return end.isAfter(start);
+    }
+
+    private void addHoliday() {
+        try {
+            String employeeName = (String) view.employeeNameComboBox.getSelectedItem();
+            String startDate = view.startDateField.getText();
+            String endDate = view.endDateField.getText();
+            Type type = Type.valueOf(view.typeCombo.getSelectedItem().toString().toUpperCase());
+
+            if (!isValidDate(startDate) || !isValidDate(endDate)) {
+                throw new IllegalArgumentException("Les dates doivent être au format YYYY-MM-DD.");
+            }
+
+            if (!isEndDateAfterStartDate(startDate, endDate)) {
+                throw new IllegalArgumentException("La date de fin doit être supérieure à la date de début.");
+            }
+
+            Holiday holiday = new Holiday(employeeName, startDate, endDate, type);
+            dao.add(holiday);
+            loadEmployeeNames(); 
+            refreshHolidayTable();
+            JOptionPane.showMessageDialog(view, "Congé ajouté avec succès.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage());
+        }
+    }
+
+    private void modifyHoliday() {
+        try {
+            // Récupérer l'ID du congé à partir de l'action du bouton
+            String actionCommand = view.modifyButton.getActionCommand();
+            if (actionCommand != null && !actionCommand.trim().isEmpty()) {
+                int id = Integer.parseInt(actionCommand.trim());
+
+                String employeeName = (String) view.employeeNameComboBox.getSelectedItem();
+                String startDate = view.startDateField.getText();
+                String endDate = view.endDateField.getText();
+                Type type = Type.valueOf(view.typeCombo.getSelectedItem().toString().toUpperCase());
+
+                if (!isValidDate(startDate) || !isValidDate(endDate)) {
+                    throw new IllegalArgumentException("Les dates doivent être au format YYYY-MM-DD.");
+                }
+
+                if (!isEndDateAfterStartDate(startDate, endDate)) {
+                    throw new IllegalArgumentException("La date de fin doit être supérieure à la date de début.");
+                }
+
+                Holiday holiday = new Holiday(employeeName, startDate, endDate, type);
+                dao.update(holiday, id);
+                loadEmployeeNames(); 
+                refreshHolidayTable();
+                JOptionPane.showMessageDialog(view, "Congé modifié avec succès.");
+            } else {
+                JOptionPane.showMessageDialog(view, "Veuillez sélectionner un congé à modifier.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage());
+        }
+    }
+
+    private void deleteHoliday() {
+        try {
+            // Afficher un message pour entrer un ID de congé
+            String input = JOptionPane.showInputDialog(view, "Veuillez entrer l'ID du congé à supprimer:");
+            if (input != null && !input.trim().isEmpty()) {
+                int id = Integer.parseInt(input.trim());
+    
+                // Demander confirmation avant de supprimer
+                int confirm = JOptionPane.showConfirmDialog(view, 
+                        "Êtes-vous sûr de vouloir supprimer le congé avec l'ID " + id + " ?", 
+                        "Confirmation de suppression", 
+                        JOptionPane.YES_NO_OPTION);
+    
+                if (confirm == JOptionPane.YES_OPTION) {
+                    dao.delete(id); // Supprimer le congé
+                    loadEmployeeNames();
+                    refreshHolidayTable();
+                    JOptionPane.showMessageDialog(view, "Congé supprimé avec succès.");
+                } else {
+                    JOptionPane.showMessageDialog(view, "Suppression annulée.");
+                }
+            } else {
+                JOptionPane.showMessageDialog(view, "ID de congé non valide ou action annulée.");
+            }
+        } catch (NumberFormatException ex) {
+            JOptionPane.showMessageDialog(view, "ID invalide. Veuillez entrer un nombre valide.");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(view, "Erreur : " + ex.getMessage());
+        }
+    }
+    
+}
+\end{lstlisting}
+
+\end{lstlisting}
+\subsection{Classe principale (Main)}
+
+\textbf{Objectif} : Démarrer l'application.
+
+\textbf{Détails} :
+\begin{itemize}
+    \item Crée une instance de \texttt{EmployeeView} et la passe à \texttt{EmployeeController}.
+    \item Crée une instance de \texttt{HolidayView} et la passe à \texttt{HolidayController}.
+    \item Révèle l'interface utilisateur avec \texttt{setVisible(true)}.
+    \item Permet de basculer entre les vues des employés et des congés à l'aide des boutons de commutation.
+\end{itemize}
+
+Code source :
+\begin{lstlisting}[language=Java]
+// Classe principale pour démarrer l'application
+package Main;
+
+import Controller.EmployeeController;
+import Controller.HolidayController;
+import View.EmployeeView;
+import View.HolidayView;
+
+public class Main {
+    public static void main(String[] args) {
+        // Créer les vues
+        EmployeeView employeeView = new EmployeeView();
+        HolidayView holidayView = new HolidayView();
+
+        // Créer les contrôleurs pour chaque vue
+        new EmployeeController(employeeView, holidayView);
+        new HolidayController(holidayView);
+
+        // Définir quelle vue sera affichée par défaut (exemple : vue des employés)
+        employeeView.setVisible(true);
+
+        // Ajouter un gestionnaire pour passer de l'une à l'autre
+        employeeView.switchViewButton.addActionListener(e -> {
+            employeeView.setVisible(false);
+            holidayView.setVisible(true);
+        });
+
+        holidayView.switchViewButton.addActionListener(e -> {
+            holidayView.setVisible(false);
+            employeeView.setVisible(true);
+        });
+    }
+}
+\end{lstlisting}
+
+\section{Conclusion}
+Ce projet fournit une gestion simple mais efficace des congés pour les employés, avec une interface graphique permettant une manipulation facile des données. La séparation des responsabilités entre le modèle, la vue et le contrôleur suit les bonnes pratiques de développement logiciel.
+\end{document}
